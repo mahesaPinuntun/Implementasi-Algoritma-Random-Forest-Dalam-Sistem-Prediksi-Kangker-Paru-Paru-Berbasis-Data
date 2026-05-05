@@ -1,0 +1,30 @@
+# Python virtual environment — never upload this (huge, machine-specific)
+myenv/
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Model files — optional, can be large
+# Comment these out if you WANT to upload the models
+# trainedmodel/*.joblib
+# trainedmodel/*.pkl
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Flask session
+flask_session/
+
+# Environment variables
+.env

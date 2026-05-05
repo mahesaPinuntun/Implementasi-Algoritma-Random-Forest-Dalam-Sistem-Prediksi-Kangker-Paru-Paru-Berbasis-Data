@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cek Risiko Kanker Paru-paru</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4 py-10">
+  <div id="app" class="bg-white shadow-lg rounded-2xl p-8 max-w-2xl w-full">
+
+    <h2 class="text-2xl font-bold mb-2 text-gray-800 text-center">
+      🩺 Kuis Diagnosa Kanker Paru-paru
+    </h2>
+    <p class="text-sm text-gray-500 text-center mb-4">
+      Jawab pertanyaan satu per satu untuk mendapatkan prediksi risiko kanker paru Anda.
+    </p>
+
+    {# ── Only show wizard if no prediction yet ── #}
+    {% if not prediction %}
+
+    <!-- Progress Bar -->
+    <div class="mb-6">
+      <div class="flex justify-between text-xs text-gray-600 mb-2">
+        <span>Pertanyaan [[ currentQuestion + 1 ]] dari [[ totalQuestions ]]</span>
+        <span>[[ progressPct ]]% selesai</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div class="bg-blue-600 h-3 rounded-full transition-all duration-500"
+             :style="{ width: progressPct + '%' }"></div>
+      </div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="bg-gray-50 rounded-2xl p-6 border-2 border-gray-200 min-h-52 mb-6">
+
+      <p class="text-xs text-blue-500 font-semibold uppercase tracking-wide mb-2">
+        Pertanyaan [[ currentQuestion + 1 ]]
+      </p>
+      <label class="block text-lg font-semibold text-gray-800 mb-5">
+        [[ currentQ.question ]]
+      </label>
+
+      <!-- NUMBER input — Age only -->
+      <div v-if="currentQ.type === 'number'">
+        <input
+          type="number"
+          v-model.number="answers[currentQ.feature]"
+          min="1" max="120"
+          placeholder="Contoh: 35"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-base
+                 focus:border-blue-500 focus:outline-none transition"/>
+        <p class="text-xs text-gray-400 mt-2">Masukkan usia dalam tahun (1–120)</p>
+      </div>
+
+      <!-- SELECT input — clickable option buttons -->
+      <div v-else-if="currentQ.type === 'select'">
+        <div class="space-y-2">
+          <button
+            v-for="opt in currentQ.options" :key="opt.value"
+            type="button"
+            @click="selectOption(currentQ.feature, opt.value)"
+            :class="answers[currentQ.feature] === opt.value
+              ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
+              : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'"
+            class="w-full px-4 py-3 border-2 rounded-xl text-left text-sm transition">
+            <span v-if="answers[currentQ.feature] === opt.value" class="mr-2 text-blue-500">✓</span>
+            [[ opt.label ]]
+          </button>
+        </div>
+      </div>
+
+      <!-- SLIDER input — range 1 to 8 (matches training data) -->
+      <div v-else-if="currentQ.type === 'slider'">
+        <div class="flex justify-between text-xs text-gray-400 mb-3">
+          <span>1 — Tidak pernah</span>
+          <span>4 — Kadang</span>
+          <span>8 — Selalu</span>
+        </div>
+
+        <input
+          type="range"
+          v-model.number="answers[currentQ.feature]"
+          min="1" max="8" step="1"
+          class="w-full accent-blue-600 cursor-pointer h-2"/>
+
+        <!-- Clickable dot indicators -->
+        <div class="flex justify-between mt-4 px-1">
+          <span
+            v-for="n in 8" :key="n"
+            @click="answers[currentQ.feature] = n"
+            :class="n <= answers[currentQ.feature]
+              ? 'bg-blue-500 scale-125'
+              : 'bg-gray-200 hover:bg-blue-200'"
+            class="w-4 h-4 rounded-full transition-all duration-200 cursor-pointer">
+          </span>
+        </div>
+
+        <!-- Value display -->
+        <div class="text-center mt-5">
+          <span class="text-4xl font-bold text-blue-600">[[ answers[currentQ.feature] ]]</span>
+          <span class="text-sm text-gray-400 ml-1">/ 8</span>
+          <p class="text-sm text-gray-500 mt-1 font-medium">[[ sliderLabel ]]</p>
+        </div>
+      </div>
+
+    </div>
+    <div>
+      <p>
+        descripsi
+      </p>
+    </div>
+
+    <!-- Navigation buttons -->
+    <div class="flex justify-between items-center gap-4">
+
+      <button
+        type="button"
+        @click="prevQuestion"
+        :disabled="currentQuestion === 0"
+        :class="currentQuestion === 0
+          ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'"
+        class="px-6 py-3 rounded-xl font-semibold transition">
+        ← Kembali
+      </button>
+
+      <!-- Step dots -->
+      <div class="flex gap-1 flex-wrap justify-center max-w-xs">
+        <span
+          v-for="(q, i) in questionsList" :key="i"
+          :class="i === currentQuestion ? 'bg-blue-500' : isAnswered(i) ? 'bg-blue-200' : 'bg-gray-200'"
+          class="h-2 w-2 rounded-full transition-all duration-300">
+        </span>
+      </div>
+
+      <!-- Next button -->
+      <button
+        v-if="currentQuestion < totalQuestions - 1"
+        type="button"
+        @click="nextQuestion"
+        :disabled="!isCurrentAnswered"
+        :class="isCurrentAnswered
+          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+          : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
+        class="px-6 py-3 rounded-xl font-semibold transition">
+        Selanjutnya →
+      </button>
+
+      <!-- Submit button — only on last question -->
+      <button
+        v-else
+        type="button"
+        @click="submitForm"
+        :disabled="!isCurrentAnswered"
+        :class="isCurrentAnswered
+          ? 'bg-green-600 hover:bg-green-700 text-white'
+          : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
+        class="px-6 py-3 rounded-xl font-semibold transition">
+        🔍 Lihat Hasil
+      </button>
+
+    </div>
+
+    <!--
+      Hidden real form for POST to Flask.
+      Vue binds :name and :value dynamically from answers object.
+      All 23 features are submitted at once when form.submit() is called.
+    -->
+    <form id="realForm" method="POST" style="display:none">
+      <template v-for="(val, key) in answers" :key="key">
+        <input type="hidden" :name="key" :value="val"/>
+      </template>
+    </form>
+
+    {% endif %}
+
+    {# ── Error message ── #}
+    {% if error_message %}
+    <div class="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl text-center">
+      <p class="font-semibold">⚠ Terjadi Kesalahan</p>
+      <p class="text-sm mt-1">{{ error_message }}</p>
+      <a href="/cekpotensikangker"
+         class="inline-block mt-3 px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">
+        Coba Lagi
+      </a>
+    </div>
+    {% endif %}
+
+    {# ── Result card — uses Jinja2 {{ }} so must stay OUTSIDE raw block ── #}
+    {% if prediction %}
+    <div class="rounded-2xl border-2 p-6
+      {% if color == 'red' %}bg-red-50 border-red-400
+      {% elif color == 'yellow' %}bg-yellow-50 border-yellow-400
+      {% else %}bg-green-50 border-green-400{% endif %}">
+
+      <div class="text-center mb-6">
+        <p class="text-sm text-gray-500 mb-2">Hasil Prediksi Tingkat Risiko Kanker Paru-paru</p>
+        <p class="text-5xl font-bold mb-2
+          {% if color == 'red' %}text-red-600
+          {% elif color == 'yellow' %}text-yellow-500
+          {% else %}text-green-600{% endif %}">
+          {{ icon }} {{ label_id }}
+        </p>
+        <p class="text-sm text-gray-500">
+          Keyakinan model:
+          <strong class="
+            {% if confidence >= 85 %}text-green-600
+            {% elif confidence >= 70 %}text-yellow-600
+            {% else %}text-orange-500{% endif %}">
+            {{ confidence }}%
+          </strong>
+          {% if confidence < 70 %}
+          <span class="block text-xs text-orange-500 mt-1">
+            ⚠ Keyakinan rendah — pasien di zona perbatasan. Konsultasi dokter sangat disarankan.
+          </span>
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Probability bars -->
+      <div class="space-y-3 max-w-md mx-auto mb-6">
+        <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-3">
+          Distribusi probabilitas semua kelas:
+        </p>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-red-600">⚠ Risiko Tinggi (High)</span>
+            <span class="font-bold text-red-600">{{ prob_high }}%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div class="bg-red-500 h-4 rounded-full transition-all duration-700"
+                 style="width: {{ prob_high }}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-yellow-600">⚡ Risiko Sedang (Medium)</span>
+            <span class="font-bold text-yellow-600">{{ prob_medium }}%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div class="bg-yellow-400 h-4 rounded-full transition-all duration-700"
+                 style="width: {{ prob_medium }}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-green-600">✅ Risiko Rendah (Low)</span>
+            <span class="font-bold text-green-600">{{ prob_low }}%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div class="bg-green-500 h-4 rounded-full transition-all duration-700"
+                 style="width: {{ prob_low }}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advice -->
+      <div class="rounded-xl p-4 text-center mb-4
+        {% if color == 'red' %}bg-red-100
+        {% elif color == 'yellow' %}bg-yellow-100
+        {% else %}bg-green-100{% endif %}">
+        <p class="text-sm font-semibold
+          {% if color == 'red' %}text-red-700
+          {% elif color == 'yellow' %}text-yellow-700
+          {% else %}text-green-700{% endif %}">
+          💡 Saran: {{ advice }}
+        </p>
+      </div>
+
+      <div class="text-center">
+        <a href="/cekpotensikangker"
+           class="inline-block px-6 py-2 bg-gray-600 hover:bg-gray-700
+                  text-white rounded-xl text-sm font-semibold transition">
+          🔄 Ulangi Kuis
+        </a>
+      </div>
+
+      <p class="text-xs text-gray-400 text-center mt-4">
+        ⚠ Hasil ini bukan diagnosis medis resmi. Akurasi model: 94.5%.
+        Selalu konsultasikan dengan dokter untuk pemeriksaan lebih lanjut.
+      </p>
+    </div>
+    {% endif %}
+
+  </div><!-- end #app -->
+
+  {# ══════════════════════════════════════════════════════
+     {% raw %} tells Jinja2: "ignore everything below
+     until {% endraw %} — don't try to parse {{ }} as
+     Jinja2 template syntax"
+
+     This is needed because Vue also uses {{ }} internally,
+     and the JS comment on line 290 contained {{ }} which
+     caused the TemplateSyntaxError.
+
+     The [[ ]] delimiters used for Vue in the HTML above
+     are safe — only {{ }} inside <script> causes the error.
+  ══════════════════════════════════════════════════════ #}
+  {% raw %}
+  <script>
+  const { createApp } = Vue
+
+  createApp({
+    // [[ ]] is used as Vue delimiter in the HTML above
+    // to avoid conflict with Jinja2's own {{ }} syntax.
+    // Inside this script block, Jinja2 is disabled by
+    // the {% raw %} tag so we can safely write JS comments.
+    delimiters: ['[[', ']]'],
+
+    data() {
+      return {
+        currentQuestion: 0,
+
+        // Pre-fill sliders with 1 (minimum valid range for training: 1-8)
+        // number and select fields start empty — user must explicitly answer
+        answers: {
+          'Age'                     : '',
+          'Gender'                  : '',
+          'Air Pollution'           : 1,
+          'Alcohol use'             : 1,
+          'Dust Allergy'            : 1,
+          'OccuPational Hazards'    : 1,
+          'Genetic Risk'            : '',
+          'chronic Lung Disease'    : '',
+          'Balanced Diet'           : 1,
+          'Obesity'                 : 1,
+          'Smoking'                 : 1,
+          'Passive Smoker'          : 1,
+          'Chest Pain'              : 1,
+          'Coughing of Blood'       : 1,
+          'Fatigue'                 : 1,
+          'Weight Loss'             : 1,
+          'Shortness of Breath'     : 1,
+          'Wheezing'                : 1,
+          'Swallowing Difficulty'   : 1,
+          'Clubbing of Finger Nails': 1,
+          'Frequent Cold'           : 1,
+          'Dry Cough'               : 1,
+          'Snoring'                 : 1
+        },
+
+        // 23 questions in exact same order as model feature_names
+        questionsList: [
+          {
+            feature : 'Age',
+            question: 'Berapakah usia Anda saat ini?',
+            type    : 'number'
+          },
+          {
+            feature : 'Gender',
+            question: 'Apa jenis kelamin Anda?',
+            type    : 'select',
+            options : [
+              { label: 'Laki-laki',  value: 1 },
+              { label: 'Perempuan', value: 2 }
+            ]
+          },
+          {
+            feature : 'Air Pollution',
+            question: 'Seberapa sering Anda terpapar polusi udara? (asap kendaraan, pabrik, dll)',
+            type    : 'slider'
+          },
+          {
+            feature : 'Alcohol use',
+            question: 'Seberapa sering Anda mengonsumsi minuman beralkohol?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Dust Allergy',
+            question: 'Seberapa parah reaksi alergi Anda terhadap debu?',
+            type    : 'slider'
+          },
+          {
+            feature : 'OccuPational Hazards',
+            question: 'Seberapa sering Anda terpapar bahan berbahaya di tempat kerja?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Genetic Risk',
+            question: 'Apakah ada riwayat kanker paru-paru di keluarga Anda?',
+            type    : 'select',
+            options : [
+              { label: 'Banyak anggota keluarga terkena (3+)',  value: 8 },
+              { label: 'Beberapa anggota keluarga terkena (2)', value: 6 },
+              { label: 'Satu anggota keluarga terkena',         value: 3 },
+              { label: 'Tidak yakin / riwayat jauh',            value: 2 },
+              { label: 'Tidak ada riwayat sama sekali',         value: 1 }
+            ]
+          },
+          {
+            feature : 'chronic Lung Disease',
+            question: 'Apakah Anda memiliki penyakit paru-paru kronis? (PPOK, asma, bronkitis)',
+            type    : 'select',
+            options : [
+              { label: 'Ya - parah (PPOK stadium lanjut / asma berat)', value: 8 },
+              { label: 'Ya - sedang (PPOK stadium 2-3)',                 value: 5 },
+              { label: 'Ya - ringan / terkontrol dengan obat',           value: 3 },
+              { label: 'Tidak ada penyakit paru kronis',                 value: 1 }
+            ]
+          },
+          {
+            feature : 'Balanced Diet',
+            question: 'Apakah kalori intake harian Anda sehat dan bergizi seimbang?',
+            type    : 'select',
+            options : [
+              { label: 'Sangat teratur dan sehat',               value: 8 },
+              { label: 'Cukup teratur walau kadang tidak',       value: 5 },
+              { label: 'Cukup berantakan / sering tidak sehat',  value: 3 },
+              { label: 'Sangat tidak teratur / sangat tidak sehat', value: 1 }
+            ]
+          },
+          {
+            feature : 'Obesity',
+            question: 'Seberapa tinggi tingkat kelebihan berat badan Anda?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Smoking',
+            question: 'Seberapa sering Anda merokok?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Passive Smoker',
+            question: 'Seberapa sering Anda terpapar asap rokok orang lain?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Chest Pain',
+            question: 'Seberapa sering Anda merasakan nyeri atau tidak nyaman di dada?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Coughing of Blood',
+            question: 'Apakah Anda pernah atau sering batuk disertai darah?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Fatigue',
+            question: 'Seberapa sering Anda merasa kelelahan atau lemas tanpa sebab jelas?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Weight Loss',
+            question: 'Seberapa signifikan penurunan berat badan Anda tanpa diet atau olahraga?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Shortness of Breath',
+            question: 'Seberapa sering Anda mengalami sesak napas?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Wheezing',
+            question: 'Seberapa sering Anda mengeluarkan suara mengi saat bernapas?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Swallowing Difficulty',
+            question: 'Seberapa sering Anda kesulitan menelan makanan atau minuman?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Clubbing of Finger Nails',
+            question: 'Apakah ujung jari dan kuku Anda membesar atau melengkung ke bawah?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Frequent Cold',
+            question: 'Seberapa sering Anda terkena flu, pilek, atau infeksi saluran napas?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Dry Cough',
+            question: 'Seberapa sering Anda mengalami batuk kering yang tidak sembuh?',
+            type    : 'slider'
+          },
+          {
+            feature : 'Snoring',
+            question: 'Apakah Anda mendengkur saat tidur?',
+            type    : 'slider'
+          }
+        ]
+      }
+    },
+
+    computed: {
+      totalQuestions() {
+        return this.questionsList.length
+      },
+      currentQ() {
+        return this.questionsList[this.currentQuestion]
+      },
+      progressPct() {
+        return Math.round(((this.currentQuestion + 1) / this.totalQuestions) * 100)
+      },
+      isCurrentAnswered() {
+        // Sliders always have a valid value (default 1, range 1-8)
+        if (this.currentQ.type === 'slider') return true
+        const val = this.answers[this.currentQ.feature]
+        return val !== '' && val !== null && val !== undefined
+      },
+      sliderLabel() {
+        const val = this.answers[this.currentQ.feature]
+        if (val <= 2) return 'Sangat jarang / hampir tidak pernah'
+        if (val <= 4) return 'Kadang-kadang'
+        if (val <= 6) return 'Cukup sering'
+        return 'Sangat sering / selalu parah'
+      }
+    },
+
+    methods: {
+      isAnswered(index) {
+        const q = this.questionsList[index]
+        if (q.type === 'slider') return true
+        const val = this.answers[q.feature]
+        return val !== '' && val !== null && val !== undefined
+      },
+      selectOption(feature, value) {
+        this.answers[feature] = value
+        // Auto-advance to next question after 300ms
+        setTimeout(() => {
+          if (this.currentQuestion < this.totalQuestions - 1) {
+            this.nextQuestion()
+          }
+        }, 300)
+      },
+      nextQuestion() {
+        if (this.isCurrentAnswered && this.currentQuestion < this.totalQuestions - 1) {
+          this.currentQuestion++
+          this.$nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+        }
+      },
+      prevQuestion() {
+        if (this.currentQuestion > 0) {
+          this.currentQuestion--
+          this.$nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+        }
+      },
+      submitForm() {
+        if (!this.isCurrentAnswered) return
+        // Submit the hidden form — Vue already bound all :name/:value
+        this.$nextTick(() => {
+          document.getElementById('realForm').submit()
+        })
+      }
+    }
+
+  }).mount('#app')
+  </script>
+  {% endraw %}
+
+</body>
+</html>
