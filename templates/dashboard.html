@@ -69,17 +69,6 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>selamat datang!</h2>
-        <p>{{ username }}</p>
-        <ul>
-            <li><a href="{{ url_for('cekpotensikangker') }}">Mulai cek potensi kangker paru-paru</a></li>
-            <hr>
-            <br>
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            <li><a href="{{ url_for('about') }}">About Dr. Lappie</a></li>
-        </ul>
-    </div>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <script>
