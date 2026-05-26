@@ -455,7 +455,7 @@
           },
           {
             feature : 'Wheezing',
-            question: 'Seberapa sering Anda mengeluarkan suara mengi saat bernapas?',
+            question: 'Seberapa sering Anda mengeluarkan suara dengung saat bernapas?',
             type    : 'slider'
           },
           {
@@ -466,7 +466,15 @@
           {
             feature : 'Clubbing of Finger Nails',
             question: 'Apakah ujung jari dan kuku Anda membesar atau melengkung ke bawah?',
-            type    : 'slider'
+            type    : "select",
+            <!---belum diedit--->
+            options : [ 
+              { label: 'Banyak anggota keluarga terkena (3+)',  value: 8 },
+              { label: 'Beberapa anggota keluarga terkena (2)', value: 6 },
+              { label: 'Satu anggota keluarga terkena',         value: 3 },
+              { label: 'Tidak yakin / riwayat jauh',            value: 2 },
+              { label: 'Tidak ada riwayat sama sekali',         value: 1 }
+            ]
           },
           {
             feature : 'Frequent Cold',
