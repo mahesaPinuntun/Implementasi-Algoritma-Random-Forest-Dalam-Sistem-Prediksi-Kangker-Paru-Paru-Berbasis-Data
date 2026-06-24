@@ -292,7 +292,7 @@
      {% raw %} tells Jinja2: "ignore everything below
      until {% endraw %} — don't try to parse {{ }} as
      Jinja2 template syntax"
-
+    
      This is needed because Vue also uses {{ }} internally,
      and the JS comment on line 290 contained {{ }} which
      caused the TemplateSyntaxError.
