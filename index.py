@@ -38,21 +38,12 @@ def home():
     return redirect(url_for('cekpotensikangker'))
 #
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
 
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    flash('Logged out.', 'info')
-    return redirect(url_for('login'))
 
 
 # ══════════════════════════════════════════════════════════════
