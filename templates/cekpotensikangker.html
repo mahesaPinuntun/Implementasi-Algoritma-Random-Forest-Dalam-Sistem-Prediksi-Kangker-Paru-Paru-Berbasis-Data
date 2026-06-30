@@ -163,7 +163,8 @@
   const LUNGDIS = [[8,'Ya - parah (PPOK stadium lanjut / asma berat)'],[5,'Ya - sedang (PPOK stadium 2-3)'],[3,'Ya - ringan / terkontrol dengan obat'],[1,'Tidak ada penyakit paru kronis']]
   const DIET    = [[8,'Sangat teratur dan sehat'],[5,'Cukup teratur walau kadang tidak'],[3,'Cukup berantakan / sering tidak sehat'],[1,'Sangat tidak teratur / sangat tidak sehat']]
   const CLUBBING= [[8,'Sangat jelas membesar/melengkung'],[5,'Cukup terlihat'],[2,'Sedikit terlihat'],[1,'Tidak ada perubahan']]
-
+  const BodyWeight = [[8,'selisih lebih dari 20 (obesitas)'],[6,'selisih diantara 15-20 (gemuk)'],[5,'selisih diantara 10-15KG(masih normal)'],[4,'selisih diantara 5kg-10kg'],[3,'selisih diantara 1kg-5kg'],[2,'berat badan kurang dari tinggi 1kg-5kg']]
+  const Watok =[[8,'lebih dari 8 sampai 10 tahun'],[7,'sudah sekitar 9 tahun'],[5,'sudah lama sekitar 6-7 tahun'],[3,'sudah berlangsung sekitar 5 tahun'],[1,'Tidak ada penyakit batuk yang mencurigakan']]
   // [feature, question, type-or-options]
   const RAW_QUESTIONS = [
     ['Age', 'Berapakah usia Anda saat ini?', 'n'],
@@ -175,7 +176,7 @@
     ['Genetic Risk', 'Apakah ada riwayat kanker paru-paru di keluarga Anda?', GENETIC],
     ['chronic Lung Disease', 'Apakah Anda memiliki penyakit paru-paru kronis? (PPOK, asma, bronkitis)', LUNGDIS],
     ['Balanced Diet', 'Apakah kalori intake harian Anda sehat dan bergizi seimbang?', DIET],
-    ['Obesity', 'Seberapa tinggi tingkat kelebihan berat badan Anda?', 's'],
+    ['Obesity', 'kira-kira berapa selisih Berat Badan dalam KG dikurangi(-) tinggi badan dalam CM', BodyWeight],
     ['Smoking', 'Seberapa sering Anda merokok?', 's'],
     ['Passive Smoker', 'Seberapa sering Anda terpapar asap rokok orang lain?', 's'],
     ['Chest Pain', 'Seberapa sering Anda merasakan nyeri atau tidak nyaman di dada?', 's'],
@@ -187,8 +188,8 @@
     ['Swallowing Difficulty', 'Seberapa sering Anda kesulitan menelan makanan atau minuman?', 's'],
     ['Clubbing of Finger Nails', 'Apakah ujung jari dan kuku Anda membesar atau melengkung ke bawah?', CLUBBING],
     ['Frequent Cold', 'Seberapa sering Anda terkena flu, pilek, atau infeksi saluran napas?', 's'],
-    ['Dry Cough', 'Seberapa sering Anda mengalami batuk kering yang tidak sembuh?', 's'],
-    ['Snoring', 'Apakah Anda mendengkur saat tidur?', 's'],
+    ['Dry Cough', 'Sudah berapa lama Anda mengalami batuk kering yang tidak sembuh?', Watok],
+    ['Snoring', 'Seberapa sering Anda mendengkur saat tidur?', 's'],
   ]
 
   // ── Build questionsList + answers via loop (instead of 23 hand-written objects) ──
