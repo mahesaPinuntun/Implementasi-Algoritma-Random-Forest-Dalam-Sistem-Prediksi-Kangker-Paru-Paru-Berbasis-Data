@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Penapisan Dini Kanker Paru-Paru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <div id="app" class="flex-grow flex flex-col">
+        
+        <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center gap-3">
+                            <div class="p-2 bg-blue-600 rounded-lg text-white">
+                                <i class="fa-solid fa-lungs text-xl"></i>
+                            </div>
+                            <span class="font-bold text-lg tracking-tight text-slate-900">PulmoGuard <span class="text-blue-600">AI</span></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        <span>Periode I 2026</span>
+                        <span class="px-2.5 py-1 bg-slate-100 rounded-full text-slate-700 border border-slate-200">Studi Kasus Lintasan Klinis</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col lg:flex-row gap-10 items-center">
+            
+            <div class="w-full lg:w-1/2 flex flex-col gap-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-blue-700 text-xs font-medium w-fit">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                    </span>
+                    Instrumen Sistem Pakar Penapisan Mandiri
+                </div>
+                
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Aplikasi Deteksi Risiko <span class="text-blue-600">Kanker Paru-Paru</span> Berbasis Inteligensia Buatan
+                </h1>
+                
+                <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+                    Sistem ini dirancang secara independen sebagai platform skrining awal (*self-screening*) objektif guna membantu menekan tingginya angka tingkat kematian akibat keterlambatan penanganan klinis penderita kanker paru-paru.
+                </p>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex gap-4">
+                    <div class="text-amber-500 text-2xl mt-1">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base">Urgensi Masalah Medis Nyata</h3>
+                        <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                            Berdasarkan data profil klinis di **RS Paru Dr. HA Rotinsulu Bandung**, sebagian besar pasien baru terdiagnosis saat penyakit telah memasuki stadium lanjut (Stadium III dan IV). Ketiadaan alat deteksi awal yang mudah diakses masyarakat memicu tingginya keterlambatan rujukan medis.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-slate-100 border border-slate-200 rounded-lg p-3 text-center">
+                        <span class="block text-xl font-bold text-slate-900">23</span>
+                        <span class="text-slate-500 text-xxs sm:text-xs font-medium uppercase">Fitur Klinis</span>
+                    </div>
+                    <div class="bg-slate-100 border border-slate-200 rounded-lg p-3 text-center">
+                        <span class="block text-xl font-bold text-slate-900">94.5%</span>
+                        <span class="text-slate-500 text-xxs sm:text-xs font-medium uppercase">Akurasi Uji</span>
+                    </div>
+                    <div class="bg-slate-100 border border-slate-200 rounded-lg p-3 text-center">
+                        <span class="block text-xl font-bold text-slate-900">Random Forest</span>
+                        <span class="text-slate-500 text-xxs sm:text-xs font-medium uppercase">Arsitektur AI</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm flex flex-col items-center justify-center text-center gap-6 min-h-[380px]">
+                <div class="w-20 h-20 bg-blue-50 border border-blue-100 rounded-full flex items-center justify-center text-blue-600 text-3xl animate-bounce">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-xl font-bold text-slate-900">Evaluasi Risiko Kesehatan Paru Anda</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
+                        Proses kuesioner membutuhkan waktu kurang dari 2 menit. Seluruh parameter gejala harian akan dikalkulasi secara instan menggunakan pembobotan matematika berbasis ansambel pohon keputusan.
+                    </p>
+                </div>
+
+                <button @click="mulaiKuis" class="w-full max-w-md py-4 px-6 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all duration-150 flex items-center justify-center gap-3 text-base sm:text-lg tracking-wide group">
+                    <span>MULAI PENAPISAN MANDIRI</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+
+                <div class="flex items-center gap-2 text-xxs sm:text-xs text-slate-400">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Sistem mematuhi integritas data anonim - Bebas biaya penapisan awal</span>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 font-medium">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                &copy; 2026 Tugas Akhir Informatika — Integrasi Framework Flask, Vue.js, dan Pustaka Joblib Biner.
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    // Penampung state reaktif jika dibutuhkan
+                    versiAplikasi: '1.0.0'
+                }
+            },
+            methods: {
+                mulaiKuis() {
+                    // Mengarahkan pengguna langsung menuju rute kuesioner pada peladen Flask
+                    window.location.href = '/cekpotensikangker';
+                }
+            }
+        });
+
+        // Konfigurasi Delimiters Khusus untuk mencegah bentrok dengan sintaks kurung kurawal {{ }} Jinja2 Flask
+        app.config.compilerOptions.delimiters = ['[[', ']]'];
+        
+        // Mount Vue App
+        app.mount('#app');
+    </script>
+</body>
+</html>

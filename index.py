@@ -35,7 +35,8 @@ print(f"[OK] Classes       : {list(bundle['label_encoder'].classes_)}")
 
 @app.route('/')
 def home():
-    return redirect(url_for('cekpotensikangker'))
+    #return redirect(url_for('cekpotensikangker'))
+    return render_template("dashboard.html")
 #
 
 
