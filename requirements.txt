@@ -3,4 +3,5 @@ joblib==1.5.3
 pandas==2.2.0
 numpy==1.26.4
 scikit-learn==1.4.2
-requests
+scipy==1.11.4
+requests==2.31.0
