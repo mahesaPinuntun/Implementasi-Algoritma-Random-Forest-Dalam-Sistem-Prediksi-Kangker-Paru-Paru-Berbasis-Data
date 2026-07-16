@@ -4,7 +4,7 @@ import pandas as pd
 import traceback
 import requests
 from flask import Flask, render_template_string, request, jsonify
-
+from huggingface_hub import hf_hub_download
 app = Flask(__name__)
 
 # ══════════════════════════════════════════════════════════════
@@ -26,7 +26,22 @@ def get_html(filename):
 # ══════════════════════════════════════════════════════════════
 # LOAD CANCER MODEL BUNDLE
 # ══════════════════════════════════════════════════════════════
-bundle = joblib.load('trainedmodel/cancer_model_bundle.joblib')
+#bundle = joblib.load('trainedmodel/cancer_model_bundle.joblib')
+
+
+
+def load_bundle():
+    print('[OK] Downloading model from Hugging Face Hub...')
+    path = hf_hub_download(
+        repo_id   = 'esachi/cancerRandomForest',
+        filename  = 'trainedmodel/cancer_model_bundle.joblib',
+        cache_dir = '/tmp'
+    )
+    print('[OK] Model downloaded — loading...')
+    return joblib.load(path)
+
+bundle = load_bundle()
+print(f"[OK] Model loaded — accuracy: {bundle['metadata']['test_accuracy']:.2%}")
 print(f"[OK] Model bundle loaded")
 print(f"[OK] Test accuracy : {bundle['metadata']['test_accuracy']:.2%}")
 print(f"[OK] Features      : {bundle['feature_count']}")
